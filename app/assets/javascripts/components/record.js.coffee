@@ -29,15 +29,13 @@
   linkClicked: (event) ->
     console.log(event + "I react on click :)")
     @setState(clicked: true)
+  child: ->
+      {
+      false: React.DOM.a({href: "javascript:void(0)", onClick: @linkClicked}, "Click me"),
+      true: React.DOM.span({}, "You clicked the link")
+      }[@state.clicked]
   render: ->
-    unless @state.clicked
-      React.DOM.div id: "one-time-click-link"
-      React.DOM.a href: "javascript:void(0)", onClick: @linkClicked, "Click me"
-    else
-      React.DOM.div(
-        {id: "one-time-click-link"},
-        React.DOM.span({}, "You clicked the link")
-      )
+    React.DOM.div({id: "one-time-click-link"}, @child())
 
 oneTimeClickLink = React.createFactory(OneTimeClickLink)
 $ ->
