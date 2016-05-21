@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   get 'meetups/new'
-
+  resources :meetups
   # resources :records
   resources :records
   # The priority is based upon order of creation: first created -> highest priority.

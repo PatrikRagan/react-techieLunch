@@ -11,41 +11,75 @@ DOM = React.DOM
   descriptionChanged: (event) ->
     @state.meetup.description = event.target.value
     @forceUpdate()
-
+  formSubmitted: (event) ->
+    event.preventDefault()
+    $.ajax
+      url: "/meetups.json"
+      type: "POST"
+      dataType: "JSON"
+      contentType: "application/json"
+      processData: false
+      data: JSON.stringify({meetup: @state.meetup})
   render: ->
     DOM.form
+      onSubmit: @formSubmitted
       className: "form-horizontal"
+      method: "post"
+      action: "/meetups"
       DOM.fieldset null,
         DOM.legend null, "New Meetup"
-        DOM.div
-          className: "form-group"
-          DOM.label
-            htmlFor: "title"
-            className: "col-lg-2 control-label"
-            "Title"
-        DOM.div
-          className: "col-lg-10"
-          DOM.input
-            className: "form-control"
-            placeholder: "Meetup title"
+
+          formInputWithLabel
             id: "title"
-            type: "text"
             value: @state.meetup.title
             onChange: @titleChanged
-        DOM.div
-          className: "form-group"
-          DOM.label
-            htmlFor: "description"
-            className: "col-lg-2 control-label"
-            "Description"
-        DOM.div
-          className: "col-lg-10"
-          DOM.input
-            className: "form-control"
-            placeholder: "Meetup description"
+            placeholder: "Meetup title"
+            labelText: "Title"
+
+          formInputWithLabel
             id: "description"
-            type: "text"
             value: @state.meetup.description
             onChange: @descriptionChanged
+            placeholder: "Meetup description"
+            labelText: "Description"
+            elementType: "textarea"
+
+          DOM.div
+            className: "form-group"
+            DOM.div
+              className: "col-lg-10 col-lg-offset-2"
+              DOM.button
+                type: "submit"
+                className: "btn btn-primary"
+                "Save"
 
 createNewMeetupForm = React.createFactory(CreateNewMeetupForm)
+
+@FormInputWithLabel = React.createClass
+  getDefaultProps: ->
+    elementType: "input"
+    inputType: "text"
+  displayName: "FormInputWithLabel"
+  render: ->
+    DOM.div
+      className: "form-group"
+      DOM.label
+        htmlFor: @props.id
+        className: "col-lg-2 control-label"
+        @props.labelText
+        DOM.div
+          className: "col-lg-10"
+          DOM[@props.elementType]
+            className: "form-control"
+            placeholder: @props.placeholder
+            id: @props.id
+            value: @props.value
+            onChange: @props.onChange
+            type: @tagType()
+  tagType: ->
+    {
+    "input": @props.inputType,
+    "textarea": null,
+    }[@props.elementType]
+
+formInputWithLabel = React.createFactory(FormInputWithLabel)
