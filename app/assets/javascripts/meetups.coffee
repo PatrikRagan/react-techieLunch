@@ -5,7 +5,8 @@ DOM = React.DOM
       title: "",
       description: "",
       date: new Date(),
-      seoText: null
+      seoText: null,
+      guests: [""],
     }
     warnings: {
       title: null
@@ -25,6 +26,16 @@ DOM = React.DOM
     @forceUpdate()
   seoChanged: (seoText) ->
     @state.meetup.seoText = seoText
+    @forceUpdate()
+  guestEmailChanged: (number, event) ->
+    guests = @state.meetup.guests
+    guests[number] = event.target.value
+    lastEmail = guests[guests.length - 1]
+    penultimateEmail = guests[guests.length - 2]
+    if (lastEmail != "")
+      guests.push("")
+    if (guests.length >= 2 && lastEmail == "" && penultimateEmail == "")
+      guests.pop()
     @forceUpdate()
   computeDefaultSeoText: () ->
     words = @state.meetup.title.toLowerCase().split(/\s+/)
@@ -46,7 +57,14 @@ DOM = React.DOM
       dataType: "JSON"
       contentType: "application/json"
       processData: false
-      data: JSON.stringify({meetup: @state.meetup})
+      data: JSON.stringify({
+        meetup: {
+          title: @state.meetup.title,
+          seo: @state.meetup.seoText,
+          description: @state.meetup.description,
+          guests: @state.meetup.guests
+        }
+      })
   render: ->
     DOM.form
       onSubmit: @formSubmitted
@@ -82,6 +100,19 @@ DOM = React.DOM
             onChange: @seoChanged
             placeholder: "SEO text"
             labelText: "seo"
+
+          DOM.fieldset null,
+            DOM.legend null, "Guests"
+            for guest, n in @state.meetup.guests
+              ((i) =>
+                formInputWithLabel
+                  id: "email"
+                  key: "guest-#{i}"
+                  value: guest
+                  onChange: (event) =>
+                    @guestEmailChanged(i, event)
+                  placeholder: "Email address of an invitee"
+                  labelText: "Email")(n)
 
           DOM.div
             className: "form-group"
