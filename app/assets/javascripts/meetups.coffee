@@ -5,6 +5,7 @@ DOM = React.DOM
       title: "",
       description: "",
       date: new Date(),
+      technology: @props.technologies[0].name,
       seoText: null,
       guests: [""],
     }
@@ -23,6 +24,9 @@ DOM = React.DOM
     @forceUpdate()
   dateChanged: (newDate) ->
     @state.meetup.date = newDate
+    @forceUpdate()
+  technologyChanged: (event) ->
+    @state.meetup.technology = event.target.value
     @forceUpdate()
   seoChanged: (seoText) ->
     @state.meetup.seoText = seoText
@@ -62,7 +66,8 @@ DOM = React.DOM
           title: @state.meetup.title,
           seo: @state.meetup.seoText,
           description: @state.meetup.description,
-          guests: @state.meetup.guests
+          guests: @state.meetup.guests,
+          technology: @state.meetup.technology
         }
       })
   render: ->
@@ -93,6 +98,20 @@ DOM = React.DOM
           dateWithLabel
             onChange: @dateChanged
             date: @state.meetup.date
+
+          DOM.div
+            className: "form-group"
+            DOM.label
+              htmlFor: "technology"
+              className: "col-lg-2 control-label"
+              "Technology"
+            DOM.div
+              className: 'col-lg-10'
+              DOM.select
+                className: "form-control"
+                onChange: @technologyChanged
+                value: @state.meetup.technology
+                DOM.option(value: tech.name, key: tech.id, tech.name) for tech in @props.technologies
 
           formInputWithLabelAndReset
             id: "seo"
